@@ -1,3 +1,51 @@
 https://colab.research.google.com/github/google-research/big_vision/blob/main/big_vision/configs/proj/paligemma/finetune_paligemma.ipynb#scrollTo=hgUhEKjzPdMQhttps://pyimagesearch.com/2020/08/24/ocr-handwriting-recognition-with-opencv-keras-and-tensorflow/
 https://colab.research.google.com/drive/1gOhRCFyt9yIoasJkd4VoaHcIqJPdJnlg?usp=sharing#scrollTo=-iShp-9ntAV5
 https://colab.research.google.com/github/google-research/big_vision/blob/main/big_vision/configs/proj/paligemma/finetune_paligemma.ipynb#scrollTo=hgUhEKjzPdMQ
+The Microsoft/Florence-2-Large model is a powerful OCR model, but it indeed outputs text in a single line. To preserve the original layout and line breaks, you can use the `LayoutProcessor` class from the `python-ocr-layout` library.
+
+Here's an example code snippet that demonstrates how to use the `LayoutProcessor` to preserve line breaks and layout:
+```
+from ocr_layout import LayoutProcessor
+from PIL import Image
+import torch
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+
+# Load the OCR model and tokenizer
+model = AutoModelForSeq2SeqLM.from_pretrained("microsoft/florence-2-large")
+tokenizer = AutoTokenizer.from_pretrained("microsoft/florence-2-large")
+
+# Load the image
+image = Image.open("image.png")
+
+# Preprocess the image
+image = image.convert("RGB")
+image = image.resize((1024, 1024))  # Resize to a fixed size
+
+# Run OCR
+outputs = model.generate(
+    input_ids=tokenizer.encode("recognize", return_tensors="pt"),
+    attention_mask=tokenizer.encode("recognize", return_tensors="pt", max_length=512, padding="max_length", truncation=True),
+    img=image
+)
+
+# Get the recognized text
+text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+# Create a LayoutProcessor instance
+layout_processor = LayoutProcessor()
+
+# Process the text to preserve layout and line breaks
+processed_text = layout_processor.process(text, image.size)
+
+# Print the processed text
+print(processed_text)
+```
+This code uses the `LayoutProcessor` to analyze the text and image layout, and then reformat the text to match the original layout, including line breaks.
+
+Note that you may need to adjust the `LayoutProcessor` parameters to fine-tune the layout detection. You can find more information in the `python-ocr-layout` documentation.
+
+Also, make sure to install the required libraries by running:
+```
+pip install python-ocr-layout transformers Pillow
+```
+I hope this helps! Let me know if you have any further questions.
