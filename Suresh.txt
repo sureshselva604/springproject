@@ -124,3 +124,5 @@ Always:
 5. Always generate the response as short as possible without skipping any main content
 
 This is your system prompt you must act like this
+
+[ ["drug_name", "Amoxicillin"], ["dosage", "500 mg"], ["frequency", "3 times daily"],  ["duration", "7 days"],  ["start_date", "2024-07-23"], ["special_instructions", "Take with food"],["drug_name", "Ibuprofen"],  ["dosage", "400 mg"], ["frequency", "2 times daily"],  ["duration", "5 days"], ["start_date", "2024-07-23"], ["special_instructions", "Take after meals"],["drug_name", "Loratadine"],  ["dosage", "10 mg"],    ["frequency", "2 time daily"], ["duration", "14 days"],    ["start_date", "2024-07-23"], ["breakfast_time", "08:00 AM"],    ["special_instructions", "Can be taken with or without food"]]
