@@ -1,0 +1,35 @@
+sk-bLMTiNrZAoBeG9eDZS1BWeQA4lRnMzUvs1I7z4DeFdT3BlbkFJBvbo2OLnX-VlNkW3IqWX4owNzwxPMW2F_AIzpl13YA
+
+
+
+def schedule_reminders_prescription(self, user_id):
+    cursor.execute('''
+        SELECT drug_name, time, mode, start_date, end_date, meal_type
+        FROM PrescriptionPlanner
+        WHERE user_id = ?
+    ''', (user_id,))
+    prescriptions = cursor.fetchall()
+
+    # Group drugs by meal type, time, and mode
+    grouped_drugs = {}
+    for prescription in prescriptions:
+        drug_name, time, mode, start_date, end_date, meal_type = prescription
+        
+        # Create a key based on time, mode, start_date, end_date, and meal_type
+        key = (time, mode, start_date, end_date, meal_type)
+        if key not in grouped_drugs:
+            grouped_drugs[key] = []
+        grouped_drugs[key].append(drug_name)
+
+    # Schedule reminders and prepare data for LLM
+    for (time, mode, start_date, end_date, meal_type), drugs_list in grouped_drugs.items():
+        for single_date in self.date_range(start_date, end_date):
+            reminder_times = self.calculate_reminder_times(time)
+            for reminder_time in reminder_times:
+                # Prepare a message with all drug names, reminder time, mode, and meal type
+                message = self.generate_message_with_llm(drugs_list, reminder_time, mode, meal_type)
+                self.set_reminder(single_date, reminder_time, message, 'prescription', user_id)
+
+
+
+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
